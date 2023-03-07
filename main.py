@@ -2,7 +2,7 @@ import argparse
 import os
 
 if __name__ == '__main__':
-    path_root = 'E:\\PaddleHelix\\apps\\pretrained_compound\\ChemRL\\GEMOR\\'
+    path_root = './'
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--task", choices=['train', 'data'], default='train')
