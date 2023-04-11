@@ -39,45 +39,17 @@ from paddle import fluid
 from pahelix.utils.splitters import \
     RandomSplitter, IndexSplitter, ScaffoldSplitter, RandomScaffoldSplitter
 from pahelix.datasets import *
-from pahelix.datasets.qm9_gdb_dataset import *
 
 
 def get_downstream_task_names(dataset_name, data_path):
     """
     Get task names of downstream dataset
     """
-    if dataset_name == 'bace':
-        task_name = get_default_bace_task_names()
-    elif dataset_name == 'bbbp':
+
+    if dataset_name == 'bbbp':
         task_name = get_default_bbbp_task_names()
     elif dataset_name == 'diliset':
         task_name = get_default_diliset_task_names()
-    elif dataset_name == 'clintox':
-        task_name = get_default_clintox_task_names() 
-    elif dataset_name == 'hiv':
-        task_name = get_default_hiv_task_names() 
-    elif dataset_name == 'muv':
-        task_name = get_default_muv_task_names() 
-    elif dataset_name == 'sider':
-        task_name = get_default_sider_task_names()
-    elif dataset_name == 'tox21':
-        task_name = get_default_tox21_task_names()
-    elif dataset_name == 'toxcast':
-        task_name = get_default_toxcast_task_names(data_path)
-    elif dataset_name == 'esol':
-        return get_default_esol_task_names()
-    elif dataset_name == 'freesolv':
-        return get_default_freesolv_task_names()
-    elif dataset_name == 'lipophilicity':
-        return get_default_lipophilicity_task_names()
-    elif dataset_name == 'qm7':
-        return get_default_qm7_task_names()
-    elif dataset_name == 'qm8':
-        return get_default_qm8_task_names()
-    elif dataset_name == 'qm9':
-        return get_default_qm9_task_names()  
-    elif dataset_name == 'qm9_gdb':
-        return get_default_qm9_gdb_task_names()
     elif dataset_name == 'test':
         return get_default_test_task_names()
     elif dataset_name == 'dilirank':
@@ -92,64 +64,20 @@ def get_downstream_task_names(dataset_name, data_path):
 
 def get_dataset(dataset_name, data_path, task_names):
     """Return dataset according to the ``dataset_name``"""
-    if dataset_name == 'bace':
-        dataset = load_bace_dataset(data_path, task_names)
+    if dataset_name == 'dilirank':
+        dataset = load_dilirank_dataset(data_path, task_names)
     elif dataset_name == 'bbbp':
         dataset = load_bbbp_dataset(data_path, task_names)
     elif dataset_name == 'diliset':
         dataset = load_diliset_dataset(data_path, task_names)
-    elif dataset_name == 'clintox':
-        dataset = load_clintox_dataset(data_path, task_names)
-    elif dataset_name == 'hiv':
-        dataset = load_hiv_dataset(data_path, task_names)
-    elif dataset_name == 'muv':
-        dataset = load_muv_dataset(data_path, task_names)
-    elif dataset_name == 'sider':
-        dataset = load_sider_dataset(data_path, task_names)
-    elif dataset_name == 'tox21':
-        dataset = load_tox21_dataset(data_path, task_names)
-    elif dataset_name == 'toxcast':
-        dataset = load_toxcast_dataset(data_path, task_names)
-    elif dataset_name == 'esol':
-        dataset = load_esol_dataset(data_path, task_names)
-    elif dataset_name == 'freesolv':
-        dataset = load_freesolv_dataset(data_path, task_names)
-    elif dataset_name == 'lipophilicity':
-        dataset = load_lipophilicity_dataset(data_path, task_names)
-    elif dataset_name == 'qm7':
-        dataset = load_qm7_dataset(data_path, task_names)
-    elif dataset_name == 'qm8':
-        dataset = load_qm8_dataset(data_path, task_names)
-    elif dataset_name == 'qm9':
-        dataset = load_qm9_dataset(data_path, task_names)
-    elif dataset_name == 'qm9_gdb':
-        dataset = load_qm9_gdb_dataset(data_path, task_names)
+    elif dataset_name == 'rega':
+        dataset = load_rega_dataset(data_path, task_names)
     elif dataset_name == 'test':
         dataset = load_test_dataset(data_path, task_names)
     else:
         raise ValueError('%s not supported' % dataset_name)
 
     return dataset
-
-
-def get_dataset_stat(dataset_name, data_path, task_names):
-    """tbd"""
-    if dataset_name == 'esol':
-        return get_esol_stat(data_path, task_names)
-    elif dataset_name == 'freesolv':
-        return get_freesolv_stat(data_path, task_names)
-    elif dataset_name == 'lipophilicity':
-        return get_lipophilicity_stat(data_path, task_names)
-    elif dataset_name == 'qm7':
-        return get_qm7_stat(data_path, task_names)
-    elif dataset_name == 'qm8':
-        return get_qm8_stat(data_path, task_names)
-    elif dataset_name == 'qm9':
-        return get_qm9_stat(data_path, task_names)
-    elif dataset_name == 'qm9_gdb':
-        return get_qm9_gdb_stat(data_path, task_names)
-    else:
-        raise ValueError(dataset_name)
 
 
 def create_splitter(split_type):
