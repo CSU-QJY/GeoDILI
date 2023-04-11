@@ -26,7 +26,7 @@ from src.utils import get_dataset, create_splitter, get_downstream_task_names, \
 print(paddle.device.get_device())
 
 
-def build_model(encoder_lr, head_lr, init_model, configs):
+def build_model(encoder_lr, head_lr, init_model, configs,args):
     ### build model
 
     compound_encoder = GeoGNNModel(configs[0])
@@ -56,7 +56,8 @@ def build_model(encoder_lr, head_lr, init_model, configs):
         compound_encoder.set_state_dict(paddle.load(init_model))
         print('Load state_dict from %s' % init_model)
     # 加载已训练好的参数
-    # model.set_state_dict(paddle.load('pretrain_models-chemrl_gem/dilirank_model.pdparams'))
+    if args.task == 'test':
+        model.set_state_dict(paddle.load('pretrain_models-chemrl_gem/dilirank_model.pdparams'))
 
     return model, encoder_opt, head_opt, criterion, collate_fn
 
@@ -74,13 +75,14 @@ def main(args):
     model_config['num_tasks'] = len(task_names)
     master = 0
     dataset_list = data_process(task_names, args)
+
     for train_dataset, test_dataset in dataset_list:
         list_test, list_train, list_auc = [], [], []
         ps_tool = Plot_save(args, train_dataset, test_dataset)
 
         model, encoder_opt, head_opt, criterion, collate_fn = build_model(args.encoder_lr, args.head_lr,
                                                                           args.init_params,
-                                                                          [compound_encoder_config, model_config])
+                                                                          [compound_encoder_config, model_config], args)
         for epoch_id in tqdm.trange(args.max_epoch):
             train_loss, train_auc, train_table, train_gra, train_label = training(args, model, train_dataset,
                                                                                   collate_fn,
@@ -89,7 +91,7 @@ def main(args):
                                                                                                   test_dataset,
                                                                                                   collate_fn)
 
-            if test_mcc >= 0.75:
+            if test_mcc >= 0.8:
                 # master = test_mcc / 1.
                 print(test_mcc)
                 ps_tool.save_split_data()

@@ -18,6 +18,7 @@ def training(args, model, train_dataset, collate_fn, criterion, encoder_opt, hea
         batch_size=args.batch_size,
         num_workers=args.num_workers,
         shuffle=True,
+        drop_last=False,
         collate_fn=collate_fn)
     total_pred = []
     total_label = []
@@ -34,10 +35,10 @@ def training(args, model, train_dataset, collate_fn, criterion, encoder_opt, hea
         valids = paddle.to_tensor(valids, 'float32')
         # if flag:
         perturb1 = paddle.to_tensor(
-            paddle.uniform([atom_bond_graphs.node_feat['atomic_num'].shape[0], 32], min=-1e-3, max=1e-3),
+            paddle.uniform([atom_bond_graphs.node_feat['atomic_num'].shape[0], 32], min=-1e-5, max=1e-5),
             stop_gradient=False)
         perturb2 = paddle.to_tensor(
-            paddle.uniform([atom_bond_graphs.edge_feat['bond_dir'].shape[0], 32], min=-1e-3, max=1e-3),
+            paddle.uniform([atom_bond_graphs.edge_feat['bond_dir'].shape[0], 32], min=-1e-5, max=1e-5),
             stop_gradient=False)
         preds, graph_repr = model(atom_bond_graphs, bond_angle_graphs, perturb1,perturb2)
         loss = criterion(preds, labels)

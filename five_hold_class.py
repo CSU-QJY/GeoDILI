@@ -29,7 +29,7 @@ from sklearn.model_selection import StratifiedKFold
 print(paddle.device.get_device())
 
 
-def build_model(encoder_lr, head_lr, init_model, configs):
+def build_model(encoder_lr, head_lr, init_model, configs,args):
     ### build model
 
     compound_encoder = GeoGNNModel(configs[0])
@@ -58,7 +58,8 @@ def build_model(encoder_lr, head_lr, init_model, configs):
         compound_encoder.set_state_dict(paddle.load(init_model))
         print('Load state_dict from %s' % init_model)
     # 加载已训练好的参数
-    # model.set_state_dict(paddle.load('pretrain_models-chemrl_gem/dilirank_model.pdparams'))
+    if args.task == 'test':
+        model.set_state_dict(paddle.load(f'pretrain_models-chemrl_gem/{args.dataset_name}_model.pdparams'))
 
     return model, encoder_opt, head_opt, criterion, collate_fn
 
@@ -80,60 +81,57 @@ def main(args):
     mean_fpr = np.linspace(0, 1, 100)
     tprs = []
     aucs = []
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(6, 6), dpi=300)
 
     for train_dataset, test_dataset, valid_dataset in dataset_list:
         master = 0
-        master1 = 0
         n += 1
         list_test, list_train, list_auc, list_valid = [], [], [], []
         ps_tool = Plot_save(args, train_dataset, test_dataset, valid_dataset)
         ps_tool.save_split_data(n)
 
         if n == 1:
+            master1 = 0
             ex_dataset = InMemoryDataset(data_list=train_dataset.data_list + valid_dataset.data_list)
 
             model, encoder_opt, head_opt, criterion, collate_fn = build_model(args.encoder_lr, args.head_lr,
                                                                               args.init_params,
-                                                                              [compound_encoder_config, model_config])
+                                                                              [compound_encoder_config, model_config],args)
             for epoch_id in tqdm.trange(args.max_epoch):
                 ex_loss, ex_auc, ex_table, ex_gra, ex_label = training(args, model, ex_dataset,
                                                                        collate_fn,
                                                                        criterion, encoder_opt, head_opt)
                 ext_loss, ext_auc, ext_table, ext_gra, ext_label, ext_pred, mcc = evaluate(args, model, test_dataset,
-                                                                                      collate_fn)
+                                                                                           collate_fn)
                 # print(ex_table)
 
                 if ext_auc > master1:
                     master1 = ext_auc / 1.
                     best_label = ext_label / 1.
                     best_pred = ext_pred / 1.
-                    ps_tool.save_model(model, epoch_id)
                     print(master1)
-
                     print(ext_table)
+
             v = RocCurveDisplay.from_predictions(best_label, best_pred)
             ex_interp_tpr = np.interp(mean_fpr, v.fpr, v.tpr)
             ex_interp_tpr[0] = 0.0
             ex_aucs = v.roc_auc
         model, encoder_opt, head_opt, criterion, collate_fn = build_model(args.encoder_lr, args.head_lr,
                                                                           args.init_params,
-                                                                          [compound_encoder_config, model_config])
+                                                                          [compound_encoder_config, model_config], args)
         for epoch_id in tqdm.trange(args.max_epoch):
             train_loss, train_auc, train_table, train_gra, train_label = training(args, model, train_dataset,
                                                                                   collate_fn,
                                                                                   criterion, encoder_opt, head_opt)
-            test_loss, test_auc, test_table, test_gra, test_label, test_pred = evaluate(args, model, test_dataset,
-                                                                                        collate_fn)
-            valid_loss, valid_auc, valid_table, valid_gra, valid_label, valid_pred = evaluate(args, model,
-                                                                                              valid_dataset,
-                                                                                              collate_fn)
+            test_loss, test_auc, test_table, test_gra, test_label, test_pred, _ = evaluate(args, model, test_dataset,
+                                                                                           collate_fn)
+            valid_loss, valid_auc, valid_table, valid_gra, valid_label, valid_pred, _ = evaluate(args, model,
+                                                                                                 valid_dataset,
+                                                                                                 collate_fn)
             if test_auc > master:
                 master = test_auc / 1.0
                 best_label = test_label / 1.
                 best_pred = test_pred / 1.
-
-
 
             list_train.append(train_table._rows[0])
             list_test.append(test_table._rows[0])
@@ -150,7 +148,7 @@ def main(args):
                 train_table._rows[i].insert(0, a)
             print(train_table)
 
-        viz = RocCurveDisplay.from_predictions(best_label, best_pred, name="ROC fold {}".format(n), alpha=0.3, lw=1,
+        viz = RocCurveDisplay.from_predictions(best_label, best_pred, name="fold {}".format(n), alpha=0.3, lw=1,
                                                ax=ax)
         interp_tpr = np.interp(mean_fpr, viz.fpr, viz.tpr)
         interp_tpr[0] = 0.0
@@ -167,9 +165,9 @@ def main(args):
         best.add_row(['best_test', list_test[:, 0].min()] + list(list_test[:, 1:].max(0)))
         best.add_row(['best_valid', list_valid[:, 0].min()] + list(list_valid[:, 1:].max(0)))
         print(best)
-
         # ps_tool.plot_auc(n, list_auc)
-    ps_tool.plot_fold(ax, tprs, mean_fpr, aucs, [ex_interp_tpr, ex_aucs])
+        ps_tool.plot_fold(ax, tprs, mean_fpr, aucs, [ex_interp_tpr, ex_aucs])
+
 
 
 def data_process(task_names, args):
@@ -230,22 +228,6 @@ class Plot_save:
         self.args = args
         self.dataset = [train_dataset, test_dataset, valid_dataset]
 
-    def save_model(self, model, epoch_id, ):
-        print('Saving!')
-        paddle.save(model.compound_encoder.state_dict(),
-                    '%s/epoch%d/compound_encoder.pdparams' % (self.args.model_dir, epoch_id))
-        paddle.save(model.state_dict(),
-                    '%s/epoch%d/model.pdparams' % (self.args.model_dir, epoch_id))
-
-    def save_data(self, data):
-        np.save(f'data_pro/random/{self.args.dataset_name}_graph_repr.npy', np.concatenate(data[1], 0))
-        np.save(f'data_pro/random/{self.args.dataset_name}_graph_label.npy', np.concatenate(data[2], 0))
-        with open('test.txt', 'a') as f:
-            f.write(
-                f'down_lr={self.args.head_lr}, GEM_lr={self.args.encoder_lr}, dropout={self.args.dropout_rate}, batch_size={self.args.batch_size}, split_type={self.args.split_type}' + '\n')
-            f.write(datetime.datetime.now().strftime("%d_%H_%M_%S") + '\n')
-            f.write(data[0].get_string() + '\n')
-
     def plot_auc(self, n, list_auc):
         np.save(f'f5/{n}_fold', list_auc)
         # ‘'g‘'代表“green”,表示画出的曲线是绿色，“-”代表画的曲线是实线，可自行选择，label代表的是图例的名称，一般要在名称前面加一个u，如果名称是中文，会显示不出来，目前还不知道怎么解决。
@@ -256,21 +238,29 @@ class Plot_save:
         plt.show()
 
     def plot_fold(self, ax, tprs, mean_fpr, aucs, ex):
-        ax.plot([0, 1], [0, 1], linestyle="--", lw=2, color="r", label="Chance", alpha=0.8)
+        ax.plot([0, 1], [0, 1], linestyle="--", lw=2, color="r", alpha=0.8)
         mean_tpr = np.mean(tprs, axis=0)
         mean_tpr[-1] = 1.0
         mean_auc = auc(mean_fpr, mean_tpr)
         std_auc = np.std(aucs)
-        ax.plot(mean_fpr, mean_tpr, color="b", label=r"Mean ROC (AUC = %0.2f $\pm$ %0.2f)" % (mean_auc, std_auc), lw=2,
+        ax.plot(mean_fpr, mean_tpr, color="b", label=r"Mean AUC=%0.3f $\pm$ %0.3f" % (mean_auc, std_auc), lw=2,
                 alpha=0.8)
-        ax.plot(mean_fpr, ex[0], color="g", label=r"Test ROC (AUC = %0.2f)" % ex[1], lw=2, alpha=0.8)
+        ax.plot(mean_fpr, ex[0], color="g", label=r"Test AUC=%0.3f" % ex[1], lw=2, alpha=0.8)
 
-        std_tpr = np.std(tprs, axis=0)
-        tprs_upper = np.minimum(mean_tpr + std_tpr, 1)
-        tprs_lower = np.maximum(mean_tpr - std_tpr, 0)
-        ax.fill_between(mean_fpr, tprs_lower, tprs_upper, color="grey", alpha=0.2, label=r"$\pm$ 1 std. dev.", )
-
-        ax.set(xlim=[-0.05, 1.05], ylim=[-0.05, 1.05], title="Receiver operating characteristic curve", )
+        ax.set_ylabel('True Positive Rate', fontsize=14)
+        ax.set_xlabel('False Positive Rate', fontsize=14)
+        # std_tpr = np.std(tprs, axis=0)
+        # tprs_upper = np.minimum(mean_tpr + std_tpr, 1)
+        # tprs_lower = np.maximum(mean_tpr - std_tpr, 0)
+        # ax.fill_between(mean_fpr, tprs_lower, tprs_upper, color="grey", alpha=0.2, label=r"$\pm$ 1 std. dev.", )
+        # ax.set_title("Receiver operating characteristic curve", fontsize=14)
+        ax.set_xlim(-0.05, 1.05)
+        ax.set_ylim(-0.05, 1.05)
+        ax.set_xticklabels([0.0, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0], fontsize='medium')
+        ax.set_yticklabels([0.0, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0], fontsize='medium')
+        # ax.set_aspect('equal')
+        # ax.set_xticks(ticks=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0], fontsize=14)
+        # ax.set_yticks(ticks=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0], fontsize=14)
         ax.legend(loc="lower right")
         plt.show()
 
