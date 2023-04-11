@@ -50,7 +50,7 @@ To test with an existing model:
 
 |                           DILIrank                           |                     Yan et al(rega)                     |
 | :----------------------------------------------------------: | :-----------------------------------------------------: |
-| ![dilirank](C:\Users\qjy41\OneDrive\桌面\药物设计\dilirank.png) | ![raga](C:\Users\qjy41\OneDrive\桌面\药物设计\raga.png) |
+| ![dilirank](dilirank.png) | ![raga](raga.png) |
 
 
 
