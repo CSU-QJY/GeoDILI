@@ -1,4 +1,4 @@
-# Geometry Enhanced Molecular Representation Learning for Property Prediction
+# GeoDILI: a robust and interpretable graph neural network for Drug-Induced Liver Injury prediction using molecular geometric representation
 
 # Background
 In this study, we developed a highly accurate and interpretable human DILI prediction model named GeoDILI. An overview of the proposed model is shown in following figure:  
