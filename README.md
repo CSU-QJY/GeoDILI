@@ -3,7 +3,7 @@
 # Background
 In this study, we developed a highly accurate and interpretable human DILI prediction model named GeoDILI. An overview of the proposed model is shown in following figure:  
 
-![image](image.png)
+![image](image.tif)
 
 The GeoDILI model used a pre-trained 3D spatial structure-based GNN to extract molecular representations, followed by a residual neural network to make an accurate DILI prediction. The gradient information from the final graph convolutional layer of GNN was utilized to obtain atom-based weights, which enabled the identification of dominant substructures that significantly contributed to DILI prediction. We evaluated the performance of GeoDILI by comparing it with the SOTA DILI prediction tools, popular GNN models, as well as conventional Deep Neural Networks (DNN) and ML models, confirming its effectiveness in predicting DILI. In addition, we applied our model to three different human DILI datasets from various sources, namely DILIrank, DILIst, and a dataset recently collected by Yan et al.. Results showed performance differences across datasets and suggested that a smaller, high-quality dataset DILIrank may lead to better results. Finally, we applied the dominant substructure inference method to analyze the entire DILIrank dataset and identified seven significant SAs with both high precision and potential mechanisms. 
 
