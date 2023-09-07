@@ -11,7 +11,7 @@ The GeoDILI model used a pre-trained 3D spatial structure-based GNN to extract m
 # Installation guide
 ## Prerequisites
 
-* OS support: Windows, Linux
+* OS support: Windows
 * Python version: 3.6, 3.7, 3.8
 
 ## Dependencies
