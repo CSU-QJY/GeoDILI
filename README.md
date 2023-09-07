@@ -18,16 +18,19 @@ The GeoDILI model used a pre-trained 3D spatial structure-based GNN to extract m
 
 | name         | version |
 | ------------ | ---- |
-| pandas       | \>=1.3.5 |
-| networkx     | \>=2.6.3 |
-| paddlepaddle | \>=2.0.0 |
-| pgl          | \>=2.1.5 |
-| rdkit-pypi   | \>=2020.09.1.0 |
-| sklearn      | \>=1.1.2 |
-| tqdm         | \>=4.64.0 |
-| prettytable  | \>=3.4.1 |
-| matplotlib   | \>=3.5.2 |
-
+| pandas       | \==1.3.5 |
+| networkx     | \==2.6.3 |
+| paddlepaddle-gpu | \==2.0.0 |
+| pgl          | \==2.2.4 |
+| rdkit-pypi   | \==2022.3.5 |
+| sklearn      | \==1.0.2 |
+| tqdm         | \==4.64.0 |
+| prettytable  | \==3.4.1 |
+| matplotlib   | \==3.5.2 |
+Please use the following environment installation command:
+$ pip3 install -r requirements.txt
+Note that the requirements.txt file does not contain the command to install paddlepaddle-gpu, you need to run the following command to install it separately:
+$ python -m pip install paddlepaddle-gpu==2.3.2.post112 -f https://www.paddlepaddle.org.cn/whl/windows/mkl/avx/stable.html
 # Usage
 
 To train a model with an existing dataset:
