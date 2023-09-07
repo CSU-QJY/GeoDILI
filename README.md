@@ -18,15 +18,15 @@ The GeoDILI model used a pre-trained 3D spatial structure-based GNN to extract m
 
 | name         | version |
 |   ------------   |   ----   |
-| pandas           | \==1.3.5 |
-| networkx         | \==2.6.3 |
+|      pandas      | \==1.3.5 |
+|     networkx     | \==2.6.3 |
 | paddlepaddle-gpu | \==2.0.0 |
-| pgl              | \==2.2.4 |
-| rdkit-pypi       | \==2022.3.5 |
-| sklearn          | \==1.0.2 |
-| tqdm             | \==4.64.0 |
-| prettytable      | \==3.4.1 |
-| matplotlib       | \==3.5.2 |
+|       pgl        | \==2.2.4 |
+|    rdkit-pypi    | \==2022.3.5 |
+|     sklearn      | \==1.0.2 |
+|      tqdm        | \==4.64.0 |
+|   prettytable    | \==3.4.1 |
+|    matplotlib    | \==3.5.2 |
 
 Please use the following environment installation command:
 $ pip3 install -r requirements.txt
