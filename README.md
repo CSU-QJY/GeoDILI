@@ -36,7 +36,7 @@ Note that the requirements.txt file does not contain the command to install padd
 
     $ python -m pip install paddlepaddle-gpu==2.3.2.post112 -f https://www.paddlepaddle.org.cn/whl/windows/mkl/avx/stable.html
 
-All datas for the experiment are contained in the [DILI.zip](#DILI.zip) file.
+All datas for the experiment are contained in the [DILI.zip](DILI.zip) file.
 
 # Usage
 
