@@ -29,10 +29,11 @@ The GeoDILI model used a pre-trained 3D spatial structure-based GNN to extract m
 | matplotlib       | \==3.5.2 |
 
 Please use the following environment installation command:
-
 $ pip3 install -r requirements.txt
+
 Note that the requirements.txt file does not contain the command to install paddlepaddle-gpu, you need to run the following command to install it separately:
 $ python -m pip install paddlepaddle-gpu==2.3.2.post112 -f https://www.paddlepaddle.org.cn/whl/windows/mkl/avx/stable.html
+
 # Usage
 
 To train a model with an existing dataset:
