@@ -18,13 +18,16 @@ The GeoDILI model used a pre-trained 3D spatial structure-based GNN to extract m
 
 | name         | version |
 | ------------ | ---- |
-| numpy        | - |
-| pandas       | - |
-| networkx     | - |
+| numpy        | \>=1.21.5 |
+| pandas       | \>=1.3.5 |
+| networkx     | \>=2.6.3 |
 | paddlepaddle | \>=2.0.0 |
 | pgl          | \>=2.1.5 |
-| rdkit-pypi   | - |
-| sklearn      | - |
+| rdkit-pypi   | \>=2020.09.1.0 |
+| sklearn      | \>=1.1.2 |
+| tqdm         | \>=4.64.0 |
+| prettytable  | \>=3.4.1 |
+| matplotlib   | \>=3.5.2 |
 
 # Usage
 
