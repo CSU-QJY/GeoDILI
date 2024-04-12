@@ -69,6 +69,9 @@ To test with an existing model:
 ## Citation
 
 If you use the code or data in this package, please cite:
+Wenxuan Wu, Jiayu Qian, Changjie Liang, Jingya Yang, Guangbo Ge, Qingping Zhou, and Xiaoqing Guan
+Chemical Research in Toxicology 2023 36 (11), 1717-1730
+DOI: 10.1021/acs.chemrestox.3c00199
 
 ```bibtex
 
